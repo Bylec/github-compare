@@ -2,14 +2,33 @@
 
 namespace App\Services;
 
-use App\HttpService\GithubHttpClient;
+use App\GithubCompare\RepositoriesBucket;
+use App\GithubCompare\RepositoryDataAggregator;
 
 class GithubService implements GithubServiceInterface
 {
-    public function compareRepositories(array $repositories)
+    /**
+     * Compares data between given repositories.
+     *
+     * @param array $repositories
+     *
+     * @return array
+     */
+    public function compareRepositories(array $repositories): array
     {
-        $githubClient = app(GithubHttpClient::class);
+        $repositoriesBucket = new RepositoriesBucket();
 
-        dd($githubClient->fetchRepositoryData($repositories[0]['owner'], $repositories[0]['repo']));
+        foreach ($repositories as $repository) {
+            $repositoryDataAggregator = new RepositoryDataAggregator($repository);
+            $repositoriesBucket->addRepository(
+                $repositoryDataAggregator->aggregate()
+            );
+        }
+
+        if ($repositoriesBucket->isEmpty()) {
+            return [];
+        }
+
+        return $repositoriesBucket->getResult();
     }
 }

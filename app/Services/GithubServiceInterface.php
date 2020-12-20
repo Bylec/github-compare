@@ -4,5 +4,12 @@ namespace App\Services;
 
 interface GithubServiceInterface
 {
-    public function compareRepositories(array $repositories);
+    /**
+     * Compares data between given repositories.
+     *
+     * @param array $repositories
+     *
+     * @return array
+     */
+    public function compareRepositories(array $repositories): array;
 }

@@ -7,7 +7,28 @@ use Illuminate\Http\Request;
 
 class GithubController extends Controller
 {
-    public function compare(Request $request, GithubServiceInterface $githubService)
+    private $githubService;
+
+    /**
+     * GithubController constructor.
+     *
+     * @param GithubServiceInterface $githubService
+     */
+    public function __construct(GithubServiceInterface $githubService)
+    {
+        $this->githubService = $githubService;
+    }
+
+    /**
+     * Controller method which compares repositories data.
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function compare(Request $request)
     {
         $this->validate($request, [
             "repositories" => [
@@ -24,6 +45,20 @@ class GithubController extends Controller
             ]
         ]);
 
-        return $githubService->compareRepositories($request->get("repositories"));
+        $result = $this->githubService
+            ->compareRepositories(
+                $request->get("repositories")
+            );
+
+        if (empty($result)) {
+            return response()->json(
+                [
+                    "error" => "Could not find any repository."
+                ],
+                404
+            );
+        }
+
+        return response()->json($result, 200);
     }
 }
