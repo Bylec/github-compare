@@ -63,10 +63,7 @@ class GithubHttpClient
     public function fetchMergeRequestRepositoryData(string $owner, string $repo): Collection
     {
         $request = new Request("GET",
-            "repos/$owner/$repo/pulls",
-            [
-                "query" => "per_page=100&state=all"
-            ]
+            "repos/$owner/$repo/pulls?per_page=100&state=all"
         );
 
         return collect($this->call($request));

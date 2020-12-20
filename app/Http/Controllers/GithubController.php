@@ -33,7 +33,8 @@ class GithubController extends Controller
         $this->validate($request, [
             "repositories" => [
                 "required",
-                "array"
+                "array",
+                "max:2"
             ],
             "repositories.*.owner" => [
                 "required",
